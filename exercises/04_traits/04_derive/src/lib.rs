@@ -15,6 +15,17 @@ struct Ticket {
     status: String,
 }
 
+
+impl ::core::fmt::Debug for Ticket {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("Ticket")
+            .field("title", &self.title)
+            .field("description", &self.description)
+            .field("status", &self.status)
+            .finish()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -16,9 +16,7 @@
 pub mod order {
     //use std::iter::Product;
     //use std::ascii::AsciiExt;
-
-
-//use std::str;
+    //use std::str; 
     pub struct Order {
         product_name: String,
         quantity: u64, //already enforces non-negativity
@@ -39,9 +37,44 @@ pub mod order {
             if unit_price == 0 {
                 panic!("Unit price can not be negative!")
             }
-            Order {product_name,
-                 quantity, 
-                 unit_price}
+            Order { product_name,
+                    quantity, 
+                    unit_price}
+        }
+        
+        pub fn total(&self) -> u64 {
+            self.quantity * self.unit_price
+        }
+        pub fn product_name(&self) -> &str {
+            &self.product_name
+        }
+        pub fn quantity(&self) -> &u64 {
+            &self.quantity
+        }
+        pub fn unit_price(&self) -> &u64 {
+            &self.unit_price
+        } 
+        // Setters need same validations, since no value is returned end expressions with semicolon
+        pub fn set_product_name(&mut self, new_name: String) {
+            if new_name.is_empty(){
+                panic!("New product name can not be empty!");
+            }
+            if new_name.len() > 300 {
+                panic!("New product name can not exceed 300 bytes.");
+            }
+            self.product_name = new_name;
+        }
+        pub fn set_quantity(&mut self, new_quantity: u64) {
+            if new_quantity == 0 {
+                panic!("New quantity can not be non-negative!");
+            }
+            self.quantity = new_quantity;
+        }
+        pub fn set_unit_price(&mut self, new_unit_price: u64) {
+            if new_unit_price == 0 {
+                panic!("New unit price can not be non-negative!");
+            }
+            self.unit_price = new_unit_price;
         }
     }
 }
