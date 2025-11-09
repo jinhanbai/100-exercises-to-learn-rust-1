@@ -3,9 +3,44 @@
 //  The docs for the `std::fmt` module are a good place to start and look for examples:
 //  https://doc.rust-lang.org/std/fmt/index.html#write
 
+use std::fmt;
+use std::error::Error;
+
+// Option 1: Derive Debug (recommended)
+//#[derive(Debug)] //==> automatically implements debug, but manual done for practice
 enum TicketNewError {
     TitleError(String),
     DescriptionError(String),
+}
+
+// Option 2: Manual Debug implementation (if you want to do it manually)
+impl fmt::Debug for TicketNewError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TicketNewError::TitleError(msg) => {
+                write!(f, "TicketNewError::TitleError({:?})", msg)
+            }
+            TicketNewError::DescriptionError(msg) => {
+                write!(f, "TicketNewError::DescriptionError({:?})", msg)
+            }
+        }
+    }
+}
+
+// Display implementation (must be manual)
+impl fmt::Display for TicketNewError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TicketNewError::TitleError(msg) => write!(f, "{}", msg),
+            TicketNewError::DescriptionError(msg) => write!(f, "{}", msg),
+        }
+    }
+}
+
+// Error implementation (requires Debug + Display)
+impl Error for TicketNewError {
+    // The Error trait has default implementations for most methods,
+    // so you can just leave it empty or implement a description if needed
 }
 
 // TODO: `easy_ticket` should panic when the title is invalid, using the error message
@@ -13,17 +48,16 @@ enum TicketNewError {
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    // If description is invalid, use the default instead of panicking
-    let final_description = if description.is_empty() || description.len() > 500 {
-        "Description not provided".to_string()
-    } else {
-        description
-    };
-    
-    // This will panic if title is invalid (which is what we want)
-    // and return the Ticket if everything is valid
-    Ticket::new(title, final_description, status).unwrap()
-    
+    match Ticket::new(title.clone(), description.clone(), status.clone()) {
+        Ok(ticket) => ticket,
+        Err(error) => match error {
+            TicketNewError::TitleError(message) => panic!("{}", message),
+            TicketNewError::DescriptionError(_) => {
+                let default_description = "Description not provided".to_string();
+                Ticket::new(title, default_description, status).unwrap()
+            }
+        },
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
