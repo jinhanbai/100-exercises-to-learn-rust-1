@@ -39,6 +39,17 @@ impl TicketStore {
     }
 }
 
+// Implement IntoIterator for TicketStore
+impl IntoIterator for TicketStore {
+    type Item = Ticket;
+    type IntoIter = std::vec::IntoIter<Ticket>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.tickets.into_iter()
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;

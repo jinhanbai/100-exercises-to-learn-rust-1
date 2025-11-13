@@ -31,6 +31,10 @@ impl TicketStore {
     pub fn add_ticket(&mut self, ticket: Ticket) {
         self.tickets.push(ticket);
     }
+    // Iterates and filters all the tickets in the store and returns a Vec of ticket objects where the status is ToDo
+    pub fn to_dos(&self) -> Vec<&Ticket> { 
+        self.tickets.iter().filter(|t| t.status == Status::ToDo).collect()
+    }
 }
 
 #[cfg(test)]
