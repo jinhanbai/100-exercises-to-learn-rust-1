@@ -3,8 +3,12 @@
 //  Do not allocate any additional memory!
 use std::thread;
 
+//using &'static lifetime to extend the lifetime of the slice to the entire duration of the program
 pub fn sum(slice: &'static [i32]) -> i32 {
-    todo!()
+    let (left, right) = slice.split_at(slice.len() / 2);
+    let left_handle = thread::spawn(move || left.into_iter().sum::<i32>());
+    let right_handle = thread::spawn(move || right.into_iter().sum::<i32>());
+    return left_handle.join().unwrap() + right_handle.join().unwrap(); // join to wait for the threads to finish
 }
 
 #[cfg(test)]
