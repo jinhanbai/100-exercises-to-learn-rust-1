@@ -1,5 +1,7 @@
-use crate::data::{Status, Ticket, TicketDraft};
+use crate::data::{Status, Ticket, TicketDraft, TicketPatch};
 use std::collections::BTreeMap;
+use crate::OverloadedError;
+
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TicketId(u64);
@@ -37,5 +39,20 @@ impl TicketStore {
 
     pub fn get_mut(&mut self, id: TicketId) -> Option<&mut Ticket> {
         self.tickets.get_mut(&id)
+    }
+
+    // Implement the update method
+    pub fn update(&mut self, patch: TicketPatch) -> Result<(), OverloadedError> {
+        let ticket = self.tickets.get_mut(&patch.id).unwrap();
+        if let Some(title) = patch.title {
+            ticket.title = title;
+        }
+        if let Some(description) = patch.description {
+            ticket.description = description;
+        }
+        if let Some(status) = patch.status {
+            ticket.status = status;
+        }
+        Ok(())
     }
 }

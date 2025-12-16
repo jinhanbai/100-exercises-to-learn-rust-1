@@ -46,6 +46,7 @@
 //!   memory exhaustion from too many queued commands
 //! - **Response channels unbounded**: Simpler, no accumulation risk (one message per
 //!   channel), client already waiting synchronously
+//!
 //! ## Real- World Restaurant Analogy:
 //! * Command channel (bounded): like a restaurant with limited tables — if full, customers wait
 //! * Response channels (unbounded): like a waiter bringing your order — one item, delivered immediately, no queue needed
