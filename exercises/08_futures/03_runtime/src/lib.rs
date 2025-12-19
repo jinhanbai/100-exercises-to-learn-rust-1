@@ -4,13 +4,37 @@
 use std::fmt::Display;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
+use std::sync::Arc;
+
+async fn handle_listener<T>(listener: TcpListener, reply: Arc<T>) -> Result<(), anyhow::Error>
+where
+    T: Display + Send + Sync + 'static,
+{
+    loop {
+        let (mut socket, _) = listener.accept().await?;
+        let reply = Arc::clone(&reply);
+        tokio::spawn(async move {
+            let reply_str = reply.to_string();
+            let _ = socket.write_all(reply_str.as_bytes()).await;
+        });
+    }
+}
 
 pub async fn fixed_reply<T>(first: TcpListener, second: TcpListener, reply: T)
 where
-    // `T` cannot be cloned. How do you share it between the two server tasks?
     T: Display + Send + Sync + 'static,
 {
-    todo!()
+    // Wrap in Arc for shared ownership
+    let reply = Arc::new(reply);
+    
+    // Clone Arc for first listener task
+    let reply1 = Arc::clone(&reply);
+    tokio::spawn(async move {
+        let _ = handle_listener(first, reply1).await;
+    });
+    
+    // Use original Arc for second listener
+    let _ = handle_listener(second, reply).await;
 }
 
 #[cfg(test)]
