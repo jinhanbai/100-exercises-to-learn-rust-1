@@ -24,16 +24,13 @@ pub async fn fixed_reply<T>(first: TcpListener, second: TcpListener, reply: T)
 where
     T: Display + Send + Sync + 'static,
 {
-    // Wrap in Arc for shared ownership
     let reply = Arc::new(reply);
     
-    // Clone Arc for first listener task
     let reply1 = Arc::clone(&reply);
     tokio::spawn(async move {
         let _ = handle_listener(first, reply1).await;
     });
     
-    // Use original Arc for second listener
     let _ = handle_listener(second, reply).await;
 }
 
