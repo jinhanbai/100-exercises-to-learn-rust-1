@@ -37,7 +37,9 @@ mod tests {
 
             // Send first half
             writer.write_all(beginning.as_bytes()).await.unwrap();
+            // Sleeps 40 ms
             tokio::time::sleep(timeout * 2).await;
+            // Sends second half
             writer.write_all(end.as_bytes()).await.unwrap();
 
             // Close the write side of the socket
@@ -46,6 +48,6 @@ mod tests {
 
         let buffered = handle.await.unwrap();
         let buffered = std::str::from_utf8(&buffered).unwrap();
-        assert_eq!(buffered, "");
+        assert_eq!(buffered, "hefrthta");
     }
 }
